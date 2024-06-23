@@ -1,4 +1,4 @@
-package com.example.messengerspringrestful.api.domain;
+package com.example.messengerspringrestful.api.domain.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

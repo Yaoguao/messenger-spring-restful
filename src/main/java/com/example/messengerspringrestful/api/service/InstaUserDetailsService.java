@@ -1,11 +1,5 @@
 package com.example.messengerspringrestful.api.service;
 
-import com.example.messengerspringrestful.api.model.InstaUserDetails;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-
 //@Service
 //public class InstaUserDetailsService implements UserDetailsService {
 //

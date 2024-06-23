@@ -1,4 +1,4 @@
-package com.example.messengerspringrestful.api.dto;
+package com.example.messengerspringrestful.api.domain.dto;
 
 import lombok.*;
 

@@ -1,5 +1,6 @@
-package com.example.messengerspringrestful.api.model;
+package com.example.messengerspringrestful.api.domain.model;
 
+@Deprecated
 public enum Role {
 
     USER("USER");

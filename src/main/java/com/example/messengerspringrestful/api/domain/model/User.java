@@ -1,4 +1,4 @@
-package com.example.messengerspringrestful.api.model;
+package com.example.messengerspringrestful.api.domain.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,8 +16,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Builder
@@ -55,7 +53,9 @@ public class User {
 
     private Profile userProfile;
 
-    private Set<Role> roles;
+//    private Set<ERole> role;
+
+    private ERole role;
 
     public User(User user) {
         this.id = user.id;
@@ -66,7 +66,7 @@ public class User {
         this.updatedAt = user.getUpdatedAt();
         this.active = user.active;
         this.userProfile = user.userProfile;
-        this.roles = user.roles;
+        this.role = user.role;
     }
 
     public User(String username, String password, String email) {
@@ -74,6 +74,6 @@ public class User {
         this.password = password;
         this.email = email;
         this.active = true;
-        this.roles = new HashSet<>() {{ Role.USER.getName(); }};
+        this.role = ERole.ROLE_USER;
     }
 }

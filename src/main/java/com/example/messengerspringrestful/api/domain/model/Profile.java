@@ -1,4 +1,4 @@
-package com.example.messengerspringrestful.api.model;
+package com.example.messengerspringrestful.api.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,10 @@ import java.util.Set;
 public class Profile {
 
     private String displayName;
+
     private String profilePictureUrl;
+
     private Date birthday;
+
     private Set<Address> addresses;
 }

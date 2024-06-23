@@ -1,4 +1,4 @@
-package com.example.messengerspringrestful.api.dto;
+package com.example.messengerspringrestful.api.domain.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

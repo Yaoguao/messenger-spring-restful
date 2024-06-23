@@ -1,4 +1,4 @@
-package com.example.messengerspringrestful.api.model;
+package com.example.messengerspringrestful.api.domain.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,9 +8,14 @@ import lombok.NoArgsConstructor;
 public class Address {
 
     private String id;
+
     private String country;
+
     private String city;
+
     private String zipCode;
+
     private String streetName;
+
     private int buildingNumber;
 }

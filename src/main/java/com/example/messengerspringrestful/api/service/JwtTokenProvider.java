@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Deprecated
 public class JwtTokenProvider {
 
     private final JwtConfig jwtConfig;

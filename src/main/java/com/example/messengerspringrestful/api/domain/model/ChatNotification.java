@@ -1,4 +1,4 @@
-package com.example.messengerspringrestful.api.domain;
+package com.example.messengerspringrestful.api.domain.model;
 
 import lombok.*;
 
@@ -7,7 +7,10 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class ChatNotification {
+
     private String id;
+
     private String senderId;
+
     private String senderName;
 }

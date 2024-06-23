@@ -1,6 +1,6 @@
 package com.example.messengerspringrestful.api.repository;
 
-import com.example.messengerspringrestful.api.domain.ChatRoom;
+import com.example.messengerspringrestful.api.domain.model.ChatRoom;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

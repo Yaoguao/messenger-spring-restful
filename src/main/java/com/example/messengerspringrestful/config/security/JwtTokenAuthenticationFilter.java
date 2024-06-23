@@ -1,64 +1,73 @@
 package com.example.messengerspringrestful.config.security;
 
-import com.example.messengerspringrestful.api.model.InstaUserDetails;
-import com.example.messengerspringrestful.api.service.JwtTokenProvider;
+import com.example.messengerspringrestful.api.service.JwtService;
 import com.example.messengerspringrestful.api.service.UserService;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
-import java.util.List;
 
 
+@Component
+@RequiredArgsConstructor
 public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtConfig jwtConfig;
-    private final JwtTokenProvider tokenProvider;
+
+    private final JwtService jwtService;
+
     private final UserService userService;
 
-    public JwtTokenAuthenticationFilter(JwtConfig jwtConfig, JwtTokenProvider tokenProvider, UserService userService) {
-        this.jwtConfig = jwtConfig;
-        this.tokenProvider = tokenProvider;
-        this.userService = userService;
-    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal( @NonNull HttpServletRequest request,
+                                     @NonNull HttpServletResponse response,
+                                     @NonNull FilterChain filterChain )
             throws ServletException, IOException {
 
-        String header = request.getHeader(jwtConfig.getHeader());
-
-        if (header == null || !header.startsWith(jwtConfig.getPrefix())) {
-            chain.doFilter(request, response);
+        // Получаем токен из заголовка
+        String authHeader = request.getHeader(jwtConfig.getHeader());
+        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, jwtConfig.getPrefix())) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        String token = header.replace(jwtConfig.getPrefix(), "");
+        // Обрезаем префикс и получаем имя пользователя из токена
+        String jwt = authHeader.substring(jwtConfig.getPrefix().length() + 1);
+        String username = jwtService.extractUserName(jwt);
 
-        if (tokenProvider.validateToken(token)) {
-            Claims claims = tokenProvider.getClaimsFromJWT(token);
-            String username = claims.getSubject();
+        if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UsernamePasswordAuthenticationToken auth = userService.findByUsername(username)
-                    .map(InstaUserDetails::new)
-                    .map(userDetails -> {
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        return authentication;
-                    }).orElse(null);
+            UserDetails userDetails = userService
+                    .userDetailsService()
+                    .loadUserByUsername(username);
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        } else {
-            SecurityContextHolder.clearContext();
+            // Если токен валиден, то аутентифицируем пользователя
+            if (jwtService.isTokenValid(jwt, userDetails)) {
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                context.setAuthentication(authToken);
+                SecurityContextHolder.setContext(context);
+            }
         }
-
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 }
